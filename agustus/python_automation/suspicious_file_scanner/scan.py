@@ -33,7 +33,10 @@ class Base_suspicious_file_scanner(ABC):
         @abstractmethod
         def analyze_word(self):
             pass
-        
+
+        @abstractmethod
+        def analyze_file(self):
+            pass
     
 class Suspicious_file_scanner(Base_suspicious_file_scanner):
 
@@ -50,9 +53,20 @@ class Suspicious_file_scanner(Base_suspicious_file_scanner):
                 if self.DANGEROUS_WORDS[word] in file.name:
                     self.suspicious_filenames.append(file)
 
+    def accumulate_exe(self) -> int:
+        total: int = 0
+        for file in self.root.rglob("*"):
+            total += file.stat().st_size
+        
+        return total / 1000
+    
     def find_suspicious_file(self):
         self.analyze_suffix()
         self.analyze_word()
+
+    def analyze_file(self):
+        return self.accumulate_exe()
+    
 
 
     def display(self, status: bool):
@@ -72,10 +86,13 @@ class Suspicious_file_scanner(Base_suspicious_file_scanner):
                 print(f"{i}. {x.resolve()}")
             print()
 
+            
             for i, x in enumerate(list_filenames, start=1):
                 print(f"{i}. {x.resolve()}")
             print()
 
+            print(f"path size: {self.analyze_file()} MB")
+            
             
         sus_extension = self.suspicious_extensions
         sus_filename = self.suspicious_filenames
