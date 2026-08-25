@@ -61,12 +61,19 @@ class Suspicious_file_scanner(Base_suspicious_file_scanner):
             if file.is_file() and file.suffix == ".exe":
                 self.total_path_size += file.stat().st_size
 
+    def exe_size(self):
+        for file in self.root.rglob("*"):
+            if file.is_file() and file.suffix == ".exe" and file.stat().st_size < 10:
+                 self.suspicious_exe_size.append((file, file.stat().st_size))
+
     def find_suspicious_file(self):
         self.analyze_suffix()
         self.analyze_word()
 
     def analyze_file(self):
         self.accumulate_exe()
+        self.exe_size()
+        
 
     
 
@@ -82,7 +89,7 @@ class Suspicious_file_scanner(Base_suspicious_file_scanner):
             for i, x in enumerate(list_filenames, start=1):
                 print(f"{i}. {x.name}")
 
-        def display_verbose(list_extensions: list, list_filenames: list):
+        def display_verbose(list_extensions: list, list_filenames: list, list_exe_size: list):
             print("===== Suspicious file extensions =====")
             for i, x in enumerate(list_extensions, start=1):
                 print(f"{i}. {x.resolve()}")
@@ -95,13 +102,16 @@ class Suspicious_file_scanner(Base_suspicious_file_scanner):
 
             print(f"path size: {self.total_path_size / 1000} MB")
             print("===== Suspicious exe size =====")
-
+            for i, x in enumerate(list_exe_size, start=1):
+                if x[1] < 10:
+                    print(f"{i}, [{x[0]}] -> {x[1]} KB, Suspicious the file size below 10 KB for exe's file")
             
             
         sus_extension = self.suspicious_extensions
         sus_filename = self.suspicious_filenames
+        exe_size = self.suspicious_exe_size
         if status:
-            display_verbose(sus_extension, sus_filename)
+            display_verbose(sus_extension, sus_filename, exe_size)
         else:
             display_normal(sus_extension, sus_filename)
 
