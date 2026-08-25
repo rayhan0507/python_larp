@@ -86,7 +86,7 @@ class Suspicious_file_scanner(Base_suspicious_file_scanner):
                 print(f"{i}. {x.resolve()}")
             print()
 
-            
+            print("===== Suspicious filenames =====")
             for i, x in enumerate(list_filenames, start=1):
                 print(f"{i}. {x.resolve()}")
             print()
