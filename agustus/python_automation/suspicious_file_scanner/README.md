@@ -22,7 +22,7 @@ Script ini otomatis akan:
 ## Isi `scan.py`, bagian per bagian
 
 
-## 3 kategori yang dideteksi
+## kategori yang dideteksi
 
 1. **Tanpa ekstensi** -> `path.suffix == ""`
 2. **Nama mencurigakan**
@@ -32,7 +32,3 @@ Script ini otomatis akan:
 3. **Ukuran aneh**
    - File 0 byte
    - File `.exe` yang kekecilan (< 10 KB)
-
-Mau nambah aturan sendiri? Tinggal edit daftar `KATA_BERBAHAYA`,
-`EKSTENSI_EXECUTABLE`, atau `BATAS_EXE_KECIL_BYTE` di bagian atas
-`scan.py` — nggak perlu ubah logika lainnya.
