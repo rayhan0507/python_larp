@@ -13,6 +13,9 @@ class Base_suspicious_file_scanner(ABC):
         
         self.suspicious_extensions = []
         self.suspicious_filenames = []
+        self.suspicious_exe_size = []
+
+        self.total_path_size: int = 0
 
         @abstractmethod
         def find_suspicious_file(self):
@@ -54,18 +57,15 @@ class Suspicious_file_scanner(Base_suspicious_file_scanner):
                     self.suspicious_filenames.append(file)
 
     def accumulate_exe(self) -> int:
-        total: int = 0
         for file in self.root.rglob("*"):
-            total += file.stat().st_size
-        
-        return total / 1000
+            self.total_path_size += file.stat().st_size
     
     def find_suspicious_file(self):
         self.analyze_suffix()
         self.analyze_word()
 
     def analyze_file(self):
-        return self.accumulate_exe()
+        self.accumulate_exe()
     
 
 
@@ -91,7 +91,9 @@ class Suspicious_file_scanner(Base_suspicious_file_scanner):
                 print(f"{i}. {x.resolve()}")
             print()
 
-            print(f"path size: {self.analyze_file()} MB")
+            print(f"path size: {self.total_path_size / 1000} MB")
+            print("===== Suspicious exe size =====")
+             
             
             
         sus_extension = self.suspicious_extensions
@@ -113,6 +115,7 @@ def main():
 
     program = Suspicious_file_scanner(root)
     program.find_suspicious_file()  
+    program.analyze_file()
     program.display(args.verbose)
     
 
