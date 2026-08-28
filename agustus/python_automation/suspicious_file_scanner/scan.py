@@ -8,7 +8,7 @@ class Base_suspicious_file_scanner(ABC):
         self.root = Path(root)
         self.DANGEROUS_WORDS = ["crack", "keygen", "payload", "exploit", "trojan", "backdoor"]
         self.EXTENSION_EXECUTABLE = [".exe", ".scr", ".bat", ".cmd", ".js", ".vbs", ".msi"]
-        self.DOCUMENT_EXTENSIONS = [".pdf", ".doc", "docx", ".xls", "xlsx", ",jpg", ".jpeg", ".png", ".txt"]
+        self.DOCUMENT_EXTENSIONS = [".pdf", ".doc", "docx", ".xls", "xlsx", ".jpg", ".jpeg", ".png", ".txt"]
         self.SMALL_LIMIT_EXE_BYTE = 10 * 1024
         
         self.suspicious_extensions = []
@@ -121,10 +121,11 @@ def main():
     parser.usage = "Run like this -> file.py [path] or file.py ([-x] / [--x]) [path]" 
     parser.add_argument("path", help="path address")
     parser.add_argument("-v", "--verbose", help="provides a verbose description", action="store_true")
+    parser.add_argument("-mv", "--move", help="move suspicious file to spesific path", action="store_true")
     
     args: argparse.Namespace = parser.parse_args()
     root: Path = args.path
-
+    
     program = Suspicious_file_scanner(root)
     program.find_suspicious_file()  
     program.analyze_file()
