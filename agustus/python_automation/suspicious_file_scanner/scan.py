@@ -73,9 +73,23 @@ class Suspicious_file_scanner(Base_suspicious_file_scanner):
     def analyze_file(self):
         self.accumulate_exe()
         self.exe_size()
-        
 
+    def move_files(self):
+        for file in self.suspicious_extensions:
+            shutil.move(str(file), f"{self.root.parent}/quarantine")
+
+        for file in self.suspicious_filenames:
+            shutil.move(str(file), f"{self.root.parent}/quarantine")
+
+        for file in self.suspicious_exe_size:
+            shutil.move(str(file), f"{self.root.parent}/quarantine")
     
+    def move_files_validation(self, status: bool):
+        print()
+        print(f"===== moving files to ")
+        if status:
+            self.move_files()
+
 
 
     def display(self, status: bool):
@@ -102,9 +116,12 @@ class Suspicious_file_scanner(Base_suspicious_file_scanner):
 
             print(f"path size: {self.total_path_size / 1000} MB")
             print("===== Suspicious exe size =====")
-            for i, x in enumerate(list_exe_size, start=1):
-                if x[1] < 10:
-                    print(f"{i}, [{x[0]}] -> {x[1]} KB, Suspicious the file size below 10 KB for exe's file")
+            if list_exe_size:
+                for i, x in enumerate(list_exe_size, start=1):
+                    if x[1] < 10:
+                        print(f"{i}, [{x[0]}] -> {x[1]} KB, Suspicious the file size below 10 KB for exe's file")
+            else:
+                print("- nothing suspicious")
             
             
         sus_extension = self.suspicious_extensions
@@ -114,6 +131,7 @@ class Suspicious_file_scanner(Base_suspicious_file_scanner):
             display_verbose(sus_extension, sus_filename, exe_size)
         else:
             display_normal(sus_extension, sus_filename)
+            
 
 
 def main():
@@ -125,11 +143,12 @@ def main():
     
     args: argparse.Namespace = parser.parse_args()
     root: Path = args.path
-    
+    print(args)
     program = Suspicious_file_scanner(root)
     program.find_suspicious_file()  
     program.analyze_file()
     program.display(args.verbose)
+    program.move_files_validation(args.move)
     
 
 
